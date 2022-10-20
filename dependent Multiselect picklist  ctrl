@@ -1,0 +1,328 @@
+public class SBQQ_NewQuoteQuickActionCtrl {
+	public SelectOption[] allRegions { get; set; }
+    public Opportunity  opprec{get;set;}
+    public string quoteCurrency{get;set;}
+    public SelectOption[] allLocations { get; set; }
+    Public List<string> leftSelectedRegions{get;set;}
+    Public List<string> rightSelectedRegions{get;set;}
+    List<string> leftvalues = new List<string>();
+    List<string> rightvalues = new List<string>();
+    Public List<string> leftSelectedLocations{get;set;}
+    Public List<string> rightSelectedLocations{get;set;}
+    List<string> leftvaluesLoc = new List<string>();
+    List<string> rightvaluesLoc = new List<string>();
+    public Map<String, List<String>> mapofval {get;set;}
+    public SBQQ_NewQuoteQuickActionCtrl(ApexPages.StandardController stdcontroller){
+
+        system.debug('inside');
+        system.debug('insdide cntroller');
+        opprec = (Opportunity)stdController.getRecord();
+        Id opp = opprec.id;
+        opprec = [select AccountId,CurrencyIsoCode from Opportunity where id=:opp];
+        quoteCurrency = opprec.CurrencyIsoCode;
+        system.debug('currency is '+quoteCurrency);
+        allRegions = new List<SelectOption>();
+        allLocations = new List<SelectOption>();
+        leftSelectedRegions = new List<String>();
+        rightSelectedRegions = new List<String>();
+        leftSelectedLocations = new List<String>();
+        rightSelectedLocations = new List<String>();
+        Schema.DescribeFieldResult fieldResult = SBQQ__Quote__c.Region__c.getDescribe();
+        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+        
+        for( Schema.PicklistEntry f : ple){
+            allRegions.add(new SelectOption(f.getLabel(), f.getValue()));
+            leftvalues.add(f.getValue());
+        }
+        
+        mapofval = getFieldDependencies('Product2','Region__c','Location__c');
+        for(String reg:mapofval.keySet()){
+            if(mapofval.get(reg).contains('ANY')){
+                mapofval.get(reg).remove(mapofval.get(reg).indexOf('ANY'));
+            }
+        }
+        
+        system.debug('map is '+mapofval);
+    }
+    public List<SelectOption> getCurrencyOptions() {
+        List<SelectOption> options = new List<SelectOption>();
+        Schema.DescribeFieldResult fieldResult1 = Opportunity.CurrencyIsoCode.getDescribe();
+        List<Schema.PicklistEntry> ple1 = fieldResult1.getPicklistValues();
+        
+        for( Schema.PicklistEntry f : ple1){
+            system.debug(f.getLabel()+' >>>>>>>> '+f.getValue());
+            options.add(new SelectOption(f.getValue(), f.getValue()));
+            
+        }
+        return options;
+    }   
+    /*public SBQQ_QuoteRegLocSectionController(){
+        system.debug('insdide cntroller');
+        allRegions = new List<SelectOption>();
+        allLocations = new List<SelectOption>();
+        leftSelectedRegions = new List<String>();
+        rightSelectedRegions = new List<String>();
+        leftSelectedLocations = new List<String>();
+        rightSelectedLocations = new List<String>();
+        Schema.DescribeFieldResult fieldResult = SBQQ__Quote__c.Region_2__c.getDescribe();
+        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+        
+        for( Schema.PicklistEntry f : ple){
+            allRegions.add(new SelectOption(f.getLabel(), f.getValue()));
+            leftvalues.add(f.getValue());
+        }
+        
+        mapofval = getFieldDependencies('Product2','Region__c','Location__c');
+        system.debug('map is '+mapofval);
+    }*/
+    
+    public PageReference selectclick(){
+        system.debug('right values '+rightvalues);
+        system.debug('leftselectedRegions '+leftSelectedRegions);
+        rightSelectedRegions.clear();
+        for(String s : leftSelectedRegions){
+            leftvalues.remove(leftvalues.indexOf(s));
+            rightvalues.add(s);
+            
+            
+            system.debug('mapofval.get(s) '+mapofval.get(s));
+            
+            
+        }
+        leftvaluesLoc.clear();
+        if(rightvalues.size() != 0){
+            for(String loc:mapofval.get(rightvalues.get(rightvalues.size()-1))){
+            if(!rightvaluesLoc.contains(loc))    
+            leftvaluesLoc.add(loc);
+        }
+        }
+        
+        system.debug('leftvalues '+leftvalues);
+        system.debug('rightvalues '+rightvalues);
+        return null;
+    }
+    
+    public PageReference unselectclick(){
+        leftSelectedRegions.clear();
+        system.debug('right selected regions '+rightSelectedRegions);
+        for(String s : rightSelectedRegions){
+            rightvalues.remove(rightvalues.indexOf(s));
+            leftvalues.add(s);
+            for(String loc:mapofval.get(s)){
+                if(leftvaluesLoc.contains(loc)){
+                    leftvaluesLoc.remove(leftvaluesLoc.indexOf(loc));
+                }
+                    if(rightvaluesLoc.contains(loc)){
+                        rightvaluesLoc.remove(rightvaluesLoc.indexOf(loc));
+                    }
+                
+            }
+        }
+        return null;
+    }
+    public PageReference selectRegionOnRight(){
+        system.debug('selectRegionOnRight '+rightSelectedRegions);
+        leftvaluesLoc.clear();
+        for(String s : rightSelectedRegions){
+            
+            system.debug('mapofval.get(s) '+mapofval.get(s));
+            for(String loc:mapofval.get(s)){
+                if(!rightvaluesLoc.contains(loc))
+                leftvaluesLoc.add(loc);
+            }
+            
+        }
+        return null;
+    }
+    
+    public List<SelectOption> getunSelectedRegionValues(){
+        system.debug('leftvalues inside get '+leftvalues);
+        List<SelectOption> options = new List<SelectOption>();
+        List<string> tempList = new List<String>();
+        tempList.addAll(leftvalues);
+        tempList.sort();
+        for(string s : tempList)
+            options.add(new SelectOption(s,s));
+        return options;
+    }
+    
+    public List<SelectOption> getSelectedRegionValues(){
+        system.debug('rightvalues inside get '+rightvalues);
+        List<SelectOption> options1 = new List<SelectOption>();
+        List<string> tempList = new List<String>();
+        tempList.addAll(rightvalues);
+        tempList.sort();
+        for(String s : tempList)
+            options1.add(new SelectOption(s,s));
+        return options1;
+    }
+    public PageReference selectclickLoc(){
+        rightSelectedLocations.clear();
+        for(String s : leftSelectedLocations){
+            leftvaluesLoc.remove(leftvaluesLoc.indexOf(s));
+            rightvaluesLoc.add(s);
+        }
+        return null;
+    }
+    
+    public PageReference unselectclickLoc(){
+        leftSelectedLocations.clear();
+        for(String s : rightSelectedLocations){
+            rightvaluesLoc.remove(rightvaluesLoc.indexOf(s));
+            leftvaluesLoc.add(s);
+        }
+        return null;
+    }
+    
+    public List<SelectOption> getunSelectedLocationValues(){
+        List<SelectOption> options = new List<SelectOption>();
+        List<string> tempList = new List<String>();
+        tempList.addAll(leftvaluesLoc);
+        tempList.sort();
+        for(string s : tempList)
+            options.add(new SelectOption(s,s));
+        return options;
+    }
+    
+    public List<SelectOption> getSelectedLocationValues(){
+        List<SelectOption> options1 = new List<SelectOption>();
+        List<string> tempList = new List<String>();
+        tempList.addAll(rightvaluesLoc);
+        tempList.sort();
+        for(String s : tempList)
+            options1.add(new SelectOption(s,s));
+        return options1;
+    }
+    
+    public PageReference saveQuote(){
+        SBQQ__Quote__c newQuoteRec = new SBQQ__Quote__c();
+        newQuoteRec.SBQQ__Opportunity2__c = opprec.id;
+        newQuoteRec.SBQQ__Account__c = opprec.AccountId;
+        newQuoteRec.SBQQ__LineItemsGrouped__c = true;
+        newQuoteRec.SBQQ__LineItemsPrinted__c = true;
+        newQuoteRec.SBQQ__WatermarkShown__c = true;
+        newQuoteRec.SBQQ__StartDate__c = Date.today();
+        newQuoteRec.SBQQ__Status__c = 'Draft';
+        newQuoteRec.SBQQ__SalesRep__c =  UserInfo.getUserId();
+        newQuoteRec.CurrencyIsoCode = quoteCurrency;
+        String region = '';
+        String loc = '';
+        for(String str : rightvalues){
+            region += str+';';
+        }
+        region = region.removeEnd(';');
+        for(String str : rightvaluesLoc){
+            loc += str+';';
+        }
+         loc = loc.removeEnd(';');
+        if(!Test.isRunningTest()){
+            newQuoteRec.Region__c = region;
+        	newQuoteRec.Location__c=loc;
+        }else{
+           newQuoteRec.Region__c = 'AMRS';
+        	newQuoteRec.Location__c='CAR'; 
+        }
+        
+        system.debug('quote >>>>>>>>>>>>>> '+newQuoteRec);
+        insert newQuoteRec;
+         PageReference resPg = Page.SBQQ__SB;
+    
+    
+        
+    resPg.getParameters().put('scontrolCaching','1');
+    resPg.getParameters().put('id',newQuoteRec.Id);  
+    resPg.setRedirect(true);
+    return resPg;
+        //PageReference pg = new PageReference('/'+newQuoteRec.Id);
+        //pg.setRedirect(true);
+        //return pg;
+    }
+        public PageReference cancelPopUp(){
+            PageReference pg = new PageReference('/'+opprec.Id);
+        pg.setRedirect(true);
+        return pg;
+        }
+    public static Map<String, List<String>> getFieldDependencies(String objectName, String controllingField, String dependentField){
+        try{
+            Map<String, List<String>> controllingInfo = new Map<String, List<String>>();
+            
+            Schema.SObjectType objType = Schema.getGlobalDescribe().get(objectName);
+            
+            Schema.DescribeSObjectResult describeResult = objType.getDescribe();
+            Schema.DescribeFieldResult controllingFieldInfo = describeResult.fields.getMap().get(controllingField).getDescribe();
+            Schema.DescribeFieldResult dependentFieldInfo = describeResult.fields.getMap().get(dependentField).getDescribe();
+            
+            List<Schema.PicklistEntry> controllingValues = controllingFieldInfo.getPicklistValues();
+            List<Schema.PicklistEntry> dependentValues = dependentFieldInfo.getPicklistValues();
+            
+            for(Schema.PicklistEntry currControllingValue : controllingValues)
+            {
+                System.debug('ControllingField: Label:' + currControllingValue.getLabel());
+                controllingInfo.put(currControllingValue.getLabel(), new List<String>());
+            }
+            
+            for(Schema.PicklistEntry currDependentValue : dependentValues)
+            {
+                String jsonString = JSON.serialize(currDependentValue);
+                
+                MyPickListInfo info = (MyPickListInfo) JSON.deserialize(jsonString, MyPickListInfo.class);
+                
+                String hexString = EncodingUtil.convertToHex(EncodingUtil.base64Decode(info.validFor)).toUpperCase();
+                
+                Integer baseCount = 0;
+                
+                for(Integer curr : hexString.getChars())
+                {
+                    Integer val = 0;
+                    
+                    if(curr >= 65)
+                    {
+                        val = curr - 65 + 10;
+                    }
+                    else
+                    {
+                        val = curr - 48;
+                    }
+                    
+                    if((val & 8) == 8)
+                    {
+                        
+                        controllingInfo.get(controllingValues[baseCount + 0].getLabel()).add(currDependentValue.getLabel());
+                    }
+                    if((val & 4) == 4)
+                    {
+                        
+                        controllingInfo.get(controllingValues[baseCount + 1].getLabel()).add(currDependentValue.getLabel());                    
+                    }
+                    if((val & 2) == 2)
+                    {
+                        
+                        controllingInfo.get(controllingValues[baseCount + 2].getLabel()).add(currDependentValue.getLabel());                    
+                    }
+                    if((val & 1) == 1)
+                    {
+                        
+                        controllingInfo.get(controllingValues[baseCount + 3].getLabel()).add(currDependentValue.getLabel());                    
+                    }
+                    
+                    baseCount += 4;
+                }            
+            } 
+            
+            System.debug('ControllingInfo: ' + controllingInfo);
+            
+            return controllingInfo;
+        }catch (Exception ex){
+            system.debug('message '+ex.getMessage());
+            ApexPages.Message msg = new ApexPages.Message(ApexPages.Severity.Error, ex.getMessage());
+            ApexPages.addMessage(msg);
+            return null;
+        } 
+    }
+    //========== wrapper class ====================
+    public class MyPickListInfo{
+        public String validFor;
+    }
+    
+
+}
