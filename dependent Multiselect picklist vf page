@@ -1,0 +1,194 @@
+<apex:page standardController="Opportunity" extensions="SBQQ_NewQuoteQuickActionCtrl" showQuickActionVfHeader="false">
+    <style>
+    .container{
+        overflow:auto;
+        height:400px;
+    }
+    .pbTitle{
+     	width:100%;   
+     }
+        
+     .mainTitle{
+        text-align: center;
+     }
+</style>
+    <apex:form >
+        
+        <!--apex:panelGrid columns="3" id="region" title="Region">
+            <apex:selectList id="sel1" value="{!leftSelectedRegions}" multiselect="true" style="width:100px" size="3" label="Region">
+                <apex:selectOptions value="{!unselectedRegionValues}" />
+            </apex:selectList>
+                <apex:panelGroup >
+                    <br/>
+                  <apex:outputLink onclick="return false;" ><apex:image value="/s.gif" alt="Add" styleClass="rightArrowIcon" title="Add" >
+                        <apex:actionSupport event="onclick" action="{!selectclick}" reRender="region,location"/>
+                    </apex:image>
+                    </apex:outputLink>
+                    <br/><br/>
+                   <apex:outputLink onclick="return false;" > <apex:image value="/s.gif" alt="Remove" styleClass="leftArrowIcon" title="Remove" >
+                        <apex:actionSupport event="onclick" action="{!unselectclick}" reRender="region,location"/>
+                    </apex:image>
+                    </apex:outputLink>
+                </apex:panelGroup>
+            <apex:selectList id="sel2" value="{!rightSelectedRegions}" multiselect="true" style="width:100px" size="3">
+                <apex:actionSupport event="onclick" action="{!selectRegionOnRight}" reRender="location"/>
+                <apex:selectOptions value="{!selectedRegionValues}" />
+            </apex:selectList>
+          
+        </apex:panelGrid>
+        <apex:panelGrid columns="3" id="location">
+            <apex:selectList id="sel3" value="{!leftSelectedLocations}" multiselect="true" style="width:100px" size="7" label="Location">
+                <apex:selectOptions value="{!unselectedLocationValues}" />
+            </apex:selectList>
+                <apex:panelGroup >
+                    <br/>
+                  <apex:outputLink onclick="return false;" ><apex:image value="/s.gif" alt="Add" styleClass="rightArrowIcon" title="Add" >
+                        <apex:actionSupport event="onclick" action="{!selectclickLoc}" reRender="location"/>
+                    </apex:image>
+                    </apex:outputLink>
+                    <br/><br/>
+                   <apex:outputLink onclick="return false;" > <apex:image value="/s.gif" alt="Remove" styleClass="leftArrowIcon" title="Remove" >
+                        <apex:actionSupport event="onclick" action="{!unselectclickLoc}" reRender="location"/>
+                    </apex:image>
+                    </apex:outputLink>
+                </apex:panelGroup>
+            <apex:selectList id="sel4" value="{!rightSelectedLocations}" multiselect="true" style="width:100px" size="7">
+                <apex:selectOptions value="{!selectedLocationValues}" />
+            </apex:selectList>
+          
+        </apex:panelGrid-->
+        <apex:outputPanel layout="block" styleclass="container">
+        <apex:pageBlock title="Create New Quote">
+                
+                <apex:pageBlockSection columns="1" >
+                    <apex:outputPanel id="multiselectPanel" layout="block" styleClass="duelingListBox">
+    <table class="layout">
+      <tbody>
+          
+              <tr>
+            <td><apex:outputPanel layout="block" styleClass="selectTitle">
+              <!-- 
+                Visualforce prepends the correct prefix to the outputLabel's 
+                'for' attribute
+              -->
+              <apex:outputLabel value="Region" style="padding-right: 15px;"/>
+            </apex:outputPanel></td>
+          <td class="selectCell">
+            
+            	<apex:selectList id="sel1" value="{!leftSelectedRegions}" multiselect="true" style="width:100px" size="3" label="Region">
+                <apex:selectOptions value="{!unselectedRegionValues}" />
+            </apex:selectList>
+          </td>
+          <td class="buttonCell">
+            	<apex:outputLink onclick="return false;" ><apex:image value="/s.gif" alt="Add" styleClass="rightArrowIcon" title="Add" >
+                        <apex:actionSupport event="onclick" action="{!selectclick}" reRender="multiselectPanel,location"/>
+                    </apex:image>
+                    </apex:outputLink>
+                    <br/><br/>
+                   <apex:outputLink onclick="return false;" > <apex:image value="/s.gif" alt="Remove" styleClass="leftArrowIcon" title="Remove" >
+                        <apex:actionSupport event="onclick" action="{!unselectclick}" reRender="multiselectPanel,location"/>
+                    </apex:image>
+                    </apex:outputLink>
+          </td>
+          <td class="selectCell">
+              <apex:selectList id="sel2" value="{!rightSelectedRegions}" multiselect="true" style="width:100px" size="3">
+                <apex:actionSupport event="onclick" action="{!selectRegionOnRight}" reRender="multiselectPanel,location"/>
+                <apex:selectOptions value="{!selectedRegionValues}" />
+            </apex:selectList>
+          </td>
+         
+        </tr>
+         
+        </tbody>
+                        </table>
+                    </apex:outputPanel>
+                 <apex:outputPanel id="location" layout="block" styleClass="duelingListBox">
+    <table class="layout">
+      <tbody>    
+      
+        <tr>
+            <td><apex:outputPanel layout="block" styleClass="selectTitle">
+              <!-- 
+                Visualforce prepends the correct prefix to the outputLabel's 
+                'for' attribute
+              -->
+              <apex:outputLabel value="Location" style="padding-right: 6px;"/>
+            </apex:outputPanel></td>
+          <td class="selectCell">
+            
+            	<apex:selectList id="sel3" value="{!leftSelectedLocations}" multiselect="true" style="width:100px" size="7" label="Location">
+                <apex:selectOptions value="{!unselectedLocationValues}" />
+            </apex:selectList>
+          </td>
+          <td class="buttonCell">
+            	<apex:outputLink onclick="return false;" ><apex:image value="/s.gif" alt="Add" styleClass="rightArrowIcon" title="Add" >
+                        <apex:actionSupport event="onclick" action="{!selectclickLoc}" reRender="location"/>
+                    </apex:image>
+                    </apex:outputLink>
+                    <br/><br/>
+                   <apex:outputLink onclick="return false;" > <apex:image value="/s.gif" alt="Remove" styleClass="leftArrowIcon" title="Remove" >
+                        <apex:actionSupport event="onclick" action="{!unselectclickLoc}" reRender="location"/>
+                    </apex:image>
+                    </apex:outputLink>
+          </td>
+          <td class="selectCell">
+              <apex:selectList id="sel4" value="{!rightSelectedLocations}" multiselect="true" style="width:100px" size="7">
+                <apex:selectOptions value="{!selectedLocationValues}" />
+            </apex:selectList>
+          </td>
+         
+        </tr>
+          
+              
+          
+      </tbody>
+                        </table>
+                    </apex:outputPanel>
+           <apex:outputPanel id="currency" layout="block" styleClass="duelingListBox">
+    <table class="layout">
+      <tbody>
+          <tr>
+              <td><apex:outputPanel layout="block" styleClass="selectTitle">
+              <!-- 
+                Visualforce prepends the correct prefix to the outputLabel's 
+                'for' attribute
+              -->
+              <apex:outputLabel value="Currency" style="padding-right: 6px;"/>
+            </apex:outputPanel></td>
+              
+          	<td>
+            	  <apex:selectList id="sel5" value="{!quoteCurrency}" multiselect="false" size="1">
+                <apex:selectOptions value="{!currencyOptions}" />
+            </apex:selectList>
+            </td>
+          
+          </tr>
+             
+         
+        </tbody>
+                        </table>
+                    </apex:outputPanel>          
+        
+        </apex:pageBlockSection>
+            <div style="margin-top: 20px;margin-left: 150px;">
+                <apex:commandButton action="{!saveQuote}" value="Save"/>
+        <apex:commandButton value="Cancel" action="{!cancelPopUp}"/>
+            </div>
+         
+        </apex:pageBlock>
+        </apex:outputPanel>
+         
+    </apex:form>
+    
+    <script type="text/javascript">
+    	function Testing(str){
+            
+        	alert(document.getElementById("sel2").value);
+        }
+    function closeWindow() {
+window.opener.location.href="/{!$CurrentPage.parameters.id}";
+window.top.close();
+ 
+}
+    </script>
+</apex:page>
